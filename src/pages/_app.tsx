@@ -1,11 +1,14 @@
 import '../styles/global.css';
 
 import { ChallengeProvider } from '../hooks/useChallenges';
+import { CountdownProvider } from '../hooks/useCountdown';
 
 function App({ Component, pageProps }) {
   return (
     <ChallengeProvider>
-      <Component {...pageProps} />
+      <CountdownProvider>
+        <Component {...pageProps} />
+      </CountdownProvider>
     </ChallengeProvider>
   );
 }
