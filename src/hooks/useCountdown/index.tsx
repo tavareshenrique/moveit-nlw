@@ -30,7 +30,7 @@ export function CountdownProvider({ children }: ICountdowProviderProps) {
 
   const countdownTimeoutRef = useRef(0);
 
-  const [time, setTime] = useState(25 * 60);
+  const [time, setTime] = useState(0.05 * 60);
   const [isActive, setIsActive] = useState(false);
   const [hasFinished, setHasFinished] = useState(false);
 
@@ -52,7 +52,7 @@ export function CountdownProvider({ children }: ICountdowProviderProps) {
     window.clearTimeout(countdownTimeoutRef.current);
     setIsActive(false);
     setHasFinished(false);
-    setTime(25 * 60);
+    setTime(0.05 * 60);
   }
 
   useEffect(() => {

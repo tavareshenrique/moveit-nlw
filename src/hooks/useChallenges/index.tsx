@@ -4,10 +4,10 @@ import {
   useState,
   useMemo,
   useEffect,
-  useRef,
+  // useRef,
 } from 'react';
-
-import { toast } from 'react-toastify';
+import Cookies from 'js-cookie';
+// import { toast } from 'react-toastify';
 
 import challenges from '../../../challenges.json';
 
@@ -22,7 +22,7 @@ interface IChallengeContextData {
   currentExperience: number;
   challengeCompleted: number;
   experienceToNextLevel: number;
-  levelUpCompleted: boolean;
+  // levelUpCompleted: boolean;
   activeChallenge: IChallenge;
   levelUp: () => void;
   startNewChallenge: () => void;
@@ -32,17 +32,27 @@ interface IChallengeContextData {
 
 interface IChallengeProviderProps {
   children: ReactNode;
+  level: number;
+  currentExperience: number;
+  challengeCompleted: number;
 }
 
 export const ChallengesContext = createContext({} as IChallengeContextData);
 
-export function ChallengeProvider({ children }: IChallengeProviderProps) {
-  const levelUpCompletedRef = useRef(0);
+export function ChallengeProvider({
+  children,
+  ...rest
+}: IChallengeProviderProps) {
+  // const levelUpCompletedRef = useRef(0);
 
-  const [level, setLevel] = useState(1);
-  const [currentExperience, setCurrentExperience] = useState(0);
-  const [challengeCompleted, setChallengeCompleted] = useState(0);
-  const [levelUpCompleted, setLevelUpCompleted] = useState(false);
+  const [level, setLevel] = useState(rest.level ?? 1);
+  const [currentExperience, setCurrentExperience] = useState(
+    rest.currentExperience ?? 0,
+  );
+  const [challengeCompleted, setChallengeCompleted] = useState(
+    rest.challengeCompleted ?? 0,
+  );
+  // const [levelUpCompleted, setLevelUpCompleted] = useState(false);
 
   const [activeChallenge, setActiveChallenge] = useState(null);
 
@@ -55,15 +65,20 @@ export function ChallengeProvider({ children }: IChallengeProviderProps) {
   }, []);
 
   useEffect(() => {
-    if (levelUpCompleted) {
-      levelUpCompletedRef.current = window.setTimeout(() => {
-        console.log('entrou');
-        setLevelUpCompleted(false);
-      }, 5000);
+    Cookies.set('level', String(level));
+    Cookies.set('currentExperience', String(currentExperience));
+    Cookies.set('challengeCompleted', String(challengeCompleted));
+  }, [challengeCompleted, currentExperience, level]);
 
-      return () => window.clearTimeout(levelUpCompletedRef.current);
-    }
-  }, [levelUpCompleted]);
+  // useEffect(() => {
+  //   if (levelUpCompleted) {
+  //     levelUpCompletedRef.current = window.setTimeout(() => {
+  //       setLevelUpCompleted(false);
+  //     }, 5000);
+
+  //     return () => window.clearTimeout(levelUpCompletedRef.current);
+  //   }
+  // }, [levelUpCompleted]);
 
   function levelUp() {
     setLevel(level + 1);
@@ -100,16 +115,16 @@ export function ChallengeProvider({ children }: IChallengeProviderProps) {
     if (finalExperience >= experienceToNextLevel) {
       finalExperience = finalExperience - experienceToNextLevel;
       levelUp();
-      setLevelUpCompleted(true);
+      // setLevelUpCompleted(true);
 
       new Audio('/levelup.mp3').play();
 
-      toast.dark('🦄 Parabéns!!! Você subiu de level!!', {
-        position: 'top-center',
-        autoClose: 5000,
-        hideProgressBar: false,
-        pauseOnHover: true,
-      });
+      // toast.dark('🦄 Parabéns!!! Você subiu de level!!', {
+      //   position: 'top-center',
+      //   autoClose: 5000,
+      //   hideProgressBar: false,
+      //   pauseOnHover: true,
+      // });
     }
 
     setCurrentExperience(finalExperience);
@@ -125,7 +140,7 @@ export function ChallengeProvider({ children }: IChallengeProviderProps) {
         challengeCompleted,
         experienceToNextLevel,
         activeChallenge,
-        levelUpCompleted,
+        // levelUpCompleted,
         levelUp,
         startNewChallenge,
         resetChallenge,
