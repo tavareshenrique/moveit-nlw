@@ -1,13 +1,11 @@
-import {
-  createContext,
-  ReactNode,
-  useState,
-  useMemo,
-  useEffect,
-  // useRef,
-} from 'react';
+import { createContext, ReactNode, useState, useMemo, useEffect } from 'react';
 import Cookies from 'js-cookie';
-// import { toast } from 'react-toastify';
+
+import useWindowSize from 'react-use/lib/useWindowSize';
+
+import Confetti from 'react-confetti';
+
+import { LevelUpModal } from '../../components/LevelUpModal';
 
 import challenges from '../../../challenges.json';
 
@@ -22,9 +20,9 @@ interface IChallengeContextData {
   currentExperience: number;
   challengeCompleted: number;
   experienceToNextLevel: number;
-  // levelUpCompleted: boolean;
   activeChallenge: IChallenge;
   levelUp: () => void;
+  closeLevelUpModal: () => void;
   startNewChallenge: () => void;
   resetChallenge: () => void;
   completeChallenge: () => void;
@@ -43,7 +41,7 @@ export function ChallengeProvider({
   children,
   ...rest
 }: IChallengeProviderProps) {
-  // const levelUpCompletedRef = useRef(0);
+  const { width, height } = useWindowSize();
 
   const [level, setLevel] = useState(rest.level ?? 1);
   const [currentExperience, setCurrentExperience] = useState(
@@ -52,7 +50,7 @@ export function ChallengeProvider({
   const [challengeCompleted, setChallengeCompleted] = useState(
     rest.challengeCompleted ?? 0,
   );
-  // const [levelUpCompleted, setLevelUpCompleted] = useState(false);
+  const [isLevelUpModalOpen, setIsLevelUpModalOpen] = useState(false);
 
   const [activeChallenge, setActiveChallenge] = useState(null);
 
@@ -70,18 +68,15 @@ export function ChallengeProvider({
     Cookies.set('challengeCompleted', String(challengeCompleted));
   }, [challengeCompleted, currentExperience, level]);
 
-  // useEffect(() => {
-  //   if (levelUpCompleted) {
-  //     levelUpCompletedRef.current = window.setTimeout(() => {
-  //       setLevelUpCompleted(false);
-  //     }, 5000);
-
-  //     return () => window.clearTimeout(levelUpCompletedRef.current);
-  //   }
-  // }, [levelUpCompleted]);
-
   function levelUp() {
     setLevel(level + 1);
+    setIsLevelUpModalOpen(true);
+
+    new Audio('/levelup.mp3').play();
+  }
+
+  function closeLevelUpModal() {
+    setIsLevelUpModalOpen(false);
   }
 
   function startNewChallenge() {
@@ -115,16 +110,6 @@ export function ChallengeProvider({
     if (finalExperience >= experienceToNextLevel) {
       finalExperience = finalExperience - experienceToNextLevel;
       levelUp();
-      // setLevelUpCompleted(true);
-
-      new Audio('/levelup.mp3').play();
-
-      // toast.dark('🦄 Parabéns!!! Você subiu de level!!', {
-      //   position: 'top-center',
-      //   autoClose: 5000,
-      //   hideProgressBar: false,
-      //   pauseOnHover: true,
-      // });
     }
 
     setCurrentExperience(finalExperience);
@@ -140,14 +125,20 @@ export function ChallengeProvider({
         challengeCompleted,
         experienceToNextLevel,
         activeChallenge,
-        // levelUpCompleted,
         levelUp,
+        closeLevelUpModal,
         startNewChallenge,
         resetChallenge,
         completeChallenge,
       }}
     >
       {children}
+      {isLevelUpModalOpen && (
+        <>
+          <Confetti width={width} height={height} />
+          <LevelUpModal />
+        </>
+      )}
     </ChallengesContext.Provider>
   );
 }
