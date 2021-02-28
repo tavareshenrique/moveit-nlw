@@ -46,7 +46,6 @@
 
 # :eyes: Demo
 
-Você pode usar você mesmo:
 👉 Demo: <https://moveit.henriquetavares.com>
 
 # :computer: Tecnologias
