@@ -46,7 +46,7 @@
 
 # :eyes: Demo
 
-👉 Demo: <https://moveit.henriquetavares.com>
+👉 Demo: <https://moveit-4-nlw.vercel.app>
 
 # :computer: Tecnologias
 
